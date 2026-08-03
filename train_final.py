@@ -1,10 +1,5 @@
 """
-Final full training -- matches the paper's actual deployment protocol
-(Section 4.2): FIXED m=15 every trial (NOT curriculum/ramped), PLAIN MSE
-over ALL 59 electrodes (NOT the missing-focused weighted loss used for
-LOSO/Table-I), trained on ALL 7 subjects. Produces the deployed pretrained
-checkpoint -- NOT the same checkpoint as train_harmonizer.py/loso_evaluate.py,
-which serve a different purpose (masking-sweep validation).
+Final full training .
 """
 
 import os
