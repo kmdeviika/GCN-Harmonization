@@ -1,0 +1,44 @@
+"""
+Dataset A loading utilities.
+"""
+
+import os
+
+import numpy as np
+import scipy.io
+from scipy import signal as sp_signal
+
+
+def load_mat_data(mat_files: list, data_dir: str):
+    """
+    Loads and concatenates one or more S0X_EEG_MI.mat files.
+    Returns X: (trials, channels, samples), Y: (trials, 1).
+    """
+    all_X, all_Y = [], []
+    for mat_file in mat_files:
+        filepath = os.path.join(data_dir, mat_file)
+        mat_data = scipy.io.loadmat(filepath)
+        X, Y = mat_data['X'], mat_data['Y']
+        # Confirmed real raw layout requires this exact transpose to reach
+        # (trials, channels, samples) -- verified against known subject
+        # counts/shapes multiple times earlier in this project.
+        X = X.transpose(2, 1, 0)
+        all_X.append(X)
+        all_Y.append(Y)
+    X_full = np.concatenate(all_X, axis=0)
+    Y_full = np.concatenate(all_Y, axis=0)
+    return X_full, Y_full
+
+
+def bandpass_filtering(X: np.ndarray, fs: float, fcut: list, filt_order: int = 4) -> np.ndarray:
+    """
+    X: (trials, samples, channels). Zero-phase Butterworth band-pass,
+    applied independently per trial per channel.
+    """
+    b, a = sp_signal.butter(filt_order, fcut, fs=fs, btype='band', output='ba')
+    X_filt = np.zeros_like(X)
+    n_trials, n_samples, n_channels = X.shape
+    for t in range(n_trials):
+        for c in range(n_channels):
+            X_filt[t, :, c] = sp_signal.filtfilt(b, a, X[t, :, c])
+    return X_filt
