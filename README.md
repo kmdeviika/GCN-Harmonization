@@ -1,45 +1,34 @@
-# GCN-based EEG Spatial Harmonization
+# GCN-Based EEG Spatial Harmonization
 
-This repository provides the GCN harmonization implementation 
+Reference implementation of the GCN electrode-harmonization model described in:
 
-## Architecture
+> K M *et al* 2026 *J. Neural Eng.* https://doi.org/10.1088/1741-2552/ae9344
 
-Each EEG trial is represented as:
+If you use this code, please cite the paper above.
 
-```text
-X: [N_c, N_s]
+
+## Requirements
+
+- Python 3.10
+- [Modal](https://modal.com) account and CLI configured (`modal token new`)
+- Dependencies listed in `requirements.txt` (installed automatically inside the Modal image)
+
+## Data
+
+Place the following inside `dataset_59_gcn/`:
+- `S01_EEG_MI.mat` – `S07_EEG_MI.mat` (BCI Competition IV Dataset 1, 59 channels)
+- `oostenveld_sphere2_59_reference_coordinates.csv` (real spherical electrode coordinates)
+
+
+## Citation
+
+```bibtex
+@article{KM2026,
+  author  = {K M and others},
+  title   = {},
+  journal = {Journal of Neural Engineering},
+  year    = {2026},
+  doi     = {10.1088/1741-2552/ae9344},
+  url     = {https://doi.org/10.1088/1741-2552/ae9344}
+}
 ```
-
-where `N_c` is the number of electrode nodes and `N_s` is the time-series
-embedding length of each node.
-
-
-
-## Graph construction
-
-Edge weights are computed from pairwise geodesic distances on a spherical head
-model with:
-
-- head radius: 10 cm;
-- Gaussian sigma: 5 cm;
-- sparsity threshold: 0.001;
-- self-loops;
-- symmetric degree normalization.
-
-## Training
-
-During self-supervised training, complete electrode embeddings are randomly
-masked. The two-layer GCN reconstructs the complete EEG graph. The training
-objective is the mean squared error over all electrodes and all time samples,
-
-
-Training and validation subjects are separated using a subject-wise split.
-
-## Harmonization
-
-Target EEG is aligned to the common 59-channel reference montage. Recorded
-electrodes are placed in their matching positions and unavailable reference
-electrodes are zero-filled before GCN inference. The GCN outputs a complete
-59-channel reconstructed EEG graph.
-
-
