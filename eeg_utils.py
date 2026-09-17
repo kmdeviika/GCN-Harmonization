@@ -30,15 +30,4 @@ def load_mat_data(mat_files: list, data_dir: str):
     return X_full, Y_full
 
 
-def bandpass_filtering(X: np.ndarray, fs: float, fcut: list, filt_order: int = 4) -> np.ndarray:
-    """
-    X: (trials, samples, channels). Zero-phase Butterworth band-pass,
-    applied independently per trial per channel.
-    """
-    b, a = sp_signal.butter(filt_order, fcut, fs=fs, btype='band', output='ba')
-    X_filt = np.zeros_like(X)
-    n_trials, n_samples, n_channels = X.shape
-    for t in range(n_trials):
-        for c in range(n_channels):
-            X_filt[t, :, c] = sp_signal.filtfilt(b, a, X[t, :, c])
-    return X_filt
+
