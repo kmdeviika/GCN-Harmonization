@@ -19,9 +19,7 @@ def load_mat_data(mat_files: list, data_dir: str):
         filepath = os.path.join(data_dir, mat_file)
         mat_data = scipy.io.loadmat(filepath)
         X, Y = mat_data['X'], mat_data['Y']
-        # Confirmed real raw layout requires this exact transpose to reach
-        # (trials, channels, samples) -- verified against known subject
-        # counts/shapes multiple times earlier in this project.
+        # Confirmed real raw layout requires this transpose 
         X = X.transpose(2, 1, 0)
         all_X.append(X)
         all_Y.append(Y)
